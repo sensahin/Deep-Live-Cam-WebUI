@@ -1,0 +1,24 @@
+#live-stream {
+    display: none; /* Hide the live stream image initially */
+    max-width: 640px; /* Set maximum width of the webcam window */
+    max-height: 480px; /* Set maximum height of the webcam window */
+    width: 100%; /* Make it responsive */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#progress-bar {
+    display: none; /* Hide the progress bar initially */
+    width: 100%;
+    background-color: #f3f3f3;
+    padding: 10px;
+    text-align: center;
+}
+
+#message {
+    margin-top: 10px;
+    color: green;
+}
+
+#error-message {
+    color: red;
+}

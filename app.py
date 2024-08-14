@@ -4,17 +4,16 @@ import os
 import threading
 from modules.processors.frame.face_swapper import process_frame
 from modules.face_analyser import get_one_face
-from modules.globals import execution_providers
-from modules.utilities import resolve_relative_path
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Global variable to store the uploaded face image path
+# Global variables
 uploaded_face_path = None
+recording = False
+out = None  # Video writer object
 
 @app.route('/')
 def index():
@@ -32,19 +31,29 @@ def upload_face():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
         uploaded_face_path = file_path
-
-    # No webcam activation here, just a redirect back to the index
     return redirect(url_for('index'))
-
 
 @app.route('/live')
 def live():
-    # Only trigger the webcam when this route is accessed
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/record/start', methods=['POST'])
+def start_record():
+    global recording, out
+    recording = True
+    out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'X264'), 20.0, (640, 480))
+    return '', 204  # No content response
+
+@app.route('/record/stop', methods=['POST'])
+def stop_record():
+    global recording, out
+    recording = False
+    if out:
+        out.release()
+    return '', 204  # No content response
 
 def generate_frames():
-    global uploaded_face_path
+    global uploaded_face_path, recording, out
     if uploaded_face_path is None:
         print("No face image uploaded.")
         return
@@ -70,6 +79,9 @@ def generate_frames():
         # Process the frame with the selected face
         processed_frame = process_frame(source_face, frame)
 
+        if recording and out:
+            out.write(processed_frame)  # Write frame to video file
+
         ret, buffer = cv2.imencode('.jpg', processed_frame)
         if not ret:
             print("Failed to encode frame.")
@@ -81,6 +93,8 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cap.release()
+    if recording and out:
+        out.release()
     print("Live stream ended.")
 
 if __name__ == '__main__':
