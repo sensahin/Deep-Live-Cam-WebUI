@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Live Cam</title>
+    <style>
+        #live-stream {
+            display: none; /* Hide the live stream image initially */
+            max-width: 640px; /* Set maximum width of the webcam window */
+            max-height: 480px; /* Set maximum height of the webcam window */
+            width: 100%; /* Make it responsive */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <h1>Deep Live Cam</h1>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="face">Select a Face Image:</label>
+        <input type="file" id="face" name="face" onchange="storeFilename(); enableLiveButton();">
+        
+        <input type="hidden" id="stored-filename" name="stored_filename">
+        
+        <label for="providers">Select Execution Provider:</label>
+        <select id="providers" name="providers">
+            <option value="CPUExecutionProvider">CPU</option>
+            <option value="CUDAExecutionProvider">CUDA (Nvidia)</option>
+            <option value="OpenVINOExecutionProvider">OpenVINO (Intel)</option>
+        </select>
+    </form>
+
+    <br>
+    <button id="live-button" type="button" onclick="startLive()" disabled>Go Live</button>
+    
+    <br>
+    <div>
+        <img id="live-stream" alt="Live stream will appear here">
+    </div>
+
+    <script>
+        function storeFilename() {
+            var fileInput = document.getElementById('face');
+            var storedFilename = document.getElementById('stored-filename');
+            storedFilename.value = fileInput.value.split('\\').pop(); // Store the filename
+        }
+
+        function enableLiveButton() {
+            document.getElementById('live-button').disabled = false;
+        }
+
+        function startLive() {
+            var img = document.getElementById('live-stream');
+            img.src = "{{ url_for('live') }}";
+            img.style.display = "block"; // Show the live stream image
+        }
+    </script>
+</body>
+</html>
