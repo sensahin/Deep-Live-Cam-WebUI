@@ -8,7 +8,11 @@ The developers of this software are aware of its possible unethical applications
 
 Users of this software are expected to use this software responsibly while abiding by local laws. If the face of a real person is being used, users are required to get consent from the concerned person and clearly mention that it is a deepfake when posting content online. Developers of this software will not be responsible for actions of end-users.
 
-#Setup
+## Intro
+
+This is a web ui version of https://github.com/hacksider/Deep-Live-Cam.
+
+## Setup
 
 python3.10 -m venv env
 
