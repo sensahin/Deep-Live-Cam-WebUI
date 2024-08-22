@@ -23,3 +23,5 @@ pip install -r requirements.txt
 python3 app.py
 
 http://127.0.0.1:5000/
+
+Note: change the model from inswapper_128_fp16.onnx to inswapper_128.onnx, then it's on GPU.
